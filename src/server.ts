@@ -56,11 +56,24 @@ export class Server {
    */
   public api() {
     //empty for now
+    const server = require('http').createServer();
+    const io = require('socket.io')(server, { cors: true });
+    console.log('socket初始化');
+    io.on('connection', client => {
+      console.log('进入socket11');
+      client.on('say', data => {
+        console.log(data);
+        client.emit('message', { text: data.my })
+      });
+
+      client.on('disconnect', () => { /* … */ });
+    });
+    server.listen(3000, '192.168.0.106');
   }
 
   /**
    * Configure application
-   *
+   * 
    * @class Server
    * @method config
    */
@@ -87,9 +100,9 @@ export class Server {
     this.app.use(cookieParser("SECRET_GOES_HERE"));
 
     // catch 404 and forward to error handler
-    this.app.use(function(err: any, req: express.Request, res: express.Response, next: express.NextFunction) {
-        err.status = 404;
-        next(err);
+    this.app.use(function (err: any, req: express.Request, res: express.Response, next: express.NextFunction) {
+      err.status = 404;
+      next(err);
     });
 
     //error handling
